@@ -1,0 +1,12 @@
+# name: test/sql/sftpfs.test
+# description: test sftpfs extension
+# group: [sftpfs]
+
+# Require statement will ensure this test is run with this extension loaded
+require sftpfs
+
+# Confirm the extension works
+query II
+SELECT * FROM read_csv_auto('sftp://testuser:testpass@localhost:2222/config/data/data_1.csv');
+----
+1	test1
