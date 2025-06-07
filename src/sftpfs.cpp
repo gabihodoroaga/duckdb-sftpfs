@@ -233,19 +233,16 @@ SFTPFileSystem::~SFTPFileSystem() {};
 
 void SFTPFileSystem::Read(FileHandle &handle, void *buffer, int64_t nr_bytes, idx_t location) {
 	auto &sfh = handle.Cast<SFTPFileHandle>();
-	// fprintf(stderr, "reading from file %s, bytes %lld, locations = %llu\n", sfh.path.c_str(), nr_bytes, location);
 	// Save the current offset
 	auto file_offset = sfh.file_offset;
 	libssh2_sftp_seek64(sfh.sftp_file_handle, location);
 	Read(handle, buffer, nr_bytes);
 	// Restore file offset to the previous value
 	Seek(handle, file_offset);
-	//fprintf(stderr, "reading from file %s end, bytes %lld, locations = %llu\n", sfh.path.c_str(), nr_bytes, location);
 }
 
 int64_t SFTPFileSystem::Read(FileHandle &handle, void *buffer, int64_t nr_bytes) {
 	auto &sfh = handle.Cast<SFTPFileHandle>();
-	//fprintf(stderr, "reading from file %s, bytes %lld\n", sfh.path.c_str(), nr_bytes);
 	int64_t buffer_available = nr_bytes;
 	int64_t buffer_offset = 0;
 	while (buffer_available > 0) {
@@ -261,7 +258,6 @@ int64_t SFTPFileSystem::Read(FileHandle &handle, void *buffer, int64_t nr_bytes)
 		buffer_offset += n_read;
 	}
 	sfh.file_offset += buffer_offset;
-	//fprintf(stderr, "reading from file %s end, read %lld\n", sfh.path.c_str(), buffer_offset);
 	return buffer_offset;
 }
 
@@ -338,7 +334,7 @@ unique_ptr<FileHandle> SFTPFileSystem::OpenFileExtended(const OpenFileInfo &file
 		FileOpener::TryGetCurrentSetting(opener, "sftp_username", params.username, info);
 	}
 	if (params.password.empty()) {
-		FileOpener::TryGetCurrentSetting(opener, "sftp_username", params.password, info);
+		FileOpener::TryGetCurrentSetting(opener, "sftp_password", params.password, info);
 	}
 
 	//  .ssh/config - use ssh config -
